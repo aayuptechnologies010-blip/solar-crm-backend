@@ -14,14 +14,7 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 const httpServer = http.createServer(app);
 
-const envOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
-  : [];
-if (process.env.FRONTEND_URL && !envOrigins.includes(process.env.FRONTEND_URL.trim())) {
-  envOrigins.push(process.env.FRONTEND_URL.trim());
-}
-
-const allowedOrigins = envOrigins.length > 0 ? envOrigins : [
+const allowedOrigins = [
   "https://salesmanagementcrm-frontend.onrender.com",
   "http://localhost:3000",
   "http://localhost:5173",
@@ -29,6 +22,11 @@ const allowedOrigins = envOrigins.length > 0 ? envOrigins : [
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
 ];
+
+// Automatically include FRONTEND_URL if set in .env
+if (process.env.FRONTEND_URL && !allowedOrigins.includes(process.env.FRONTEND_URL.trim())) {
+  allowedOrigins.push(process.env.FRONTEND_URL.trim());
+}
 
 // Socket.io setup
 const io = new Server(httpServer, {
